@@ -48,3 +48,7 @@ AACC Member Dictionary:
 For now, leave out the attendance check
 
 */
+
+function updateMembershipLog() {
+    
+}

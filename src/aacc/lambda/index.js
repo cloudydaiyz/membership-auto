@@ -7,7 +7,7 @@
 // use Terraform for provisioning the lambda
 
 // Handler for the lambda function
-// export const handler = async(event) => {
+// exports.handler = async(event) => {
 //     // TODO implement
 //     const response = {
 //         statusCode: 200,
