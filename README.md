@@ -1,7 +1,8 @@
 # aacc-membership
-Handles the automation of membership information for AACC and ABCS
+Handles the automation of membership information for AACC and ABCS. Based off of my previous [AACC automation project](https://github.com/cloudydaiyz/aacc-membership-log).
 
-Currently: unimplemented
+Currently on Version 0.1:
+
 
 Version 1.0 goals:
 - Schedule lambda the 1st of every month to refresh membership logs
