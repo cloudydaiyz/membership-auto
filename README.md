@@ -10,3 +10,4 @@ Version 1.0 goals:
 - Update settings.json in S3 bucket through the console
 - Deploy AWS CloudWatch, AWS Lambda, and AWS S3 bucket using Terraform
 - Send AACC leadership confirmation email through the console
+- Manually update access token through the console
