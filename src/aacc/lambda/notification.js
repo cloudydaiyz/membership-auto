@@ -3,22 +3,28 @@
 import moment from "moment"
 import nodemailer from "nodemailer";
 import { getLogInfo } from "./membership.js"
-import { getSettings } from "./settings-manager.js";
-const settings = getSettings();
+import { getSettings } from "./settings-manager.mjs";
 
-const leadershipSheetId = settings.google_ids.LEADERSHIP_SIGN_UP_ID; // change this if testing
-const appPassword = settings.google_app_data.APP_PASSWORD;
+let settings;
 
-// Links to include in mail
-const leadershipDocLink = settings.links.LEADERSHIP_DOC;
-const zoomLink = settings.links.ZOOM;
-
-export async function sendLeadershipUpdate(googleClient) {
+export async function sendLeadershipUpdate(googleClient, importedSettings) {
     // console.log(moment());
     const sheets = googleClient.sheets('v4');
 
+    if(!settings) {
+        updateSettings(importedSettings);
+    }
+
     const emailList = await obtainEmailList(sheets);
     sendEmail(emailList);
+}
+
+function updateSettings(importedSettings) {
+    if(importedSettings) {
+        settings = importedSettings;
+    } else {
+        settings = getSettings();
+    }
 }
 
 // Returns a list of people to email for leadership roles
@@ -26,14 +32,14 @@ async function obtainEmailList(sheets) {
     // Obtain sign up information from the sheet
     let sheetMembers = await sheets.spreadsheets.values.get(
         {
-          spreadsheetId: leadershipSheetId,
+          spreadsheetId: settings.google_ids.LEADERSHIP_SIGN_UP_ID,
           range: settings.ranges.SIGN_IN_INFO
         }
     )
     sheetMembers = sheetMembers.data.values;
 
     // Obtain the current AACC members from the membership log
-    const currentMembers = await getLogInfo(sheets);
+    const currentMembers = await getLogInfo(sheets, settings);
     
     // Populate the email list only with people who responded in the past month
     let emailList = [];
@@ -73,7 +79,7 @@ async function sendEmail(emailList) {
         service: "gmail",
         auth: {
             user: "kduncan@utexas.edu",
-            pass: appPassword
+            pass: settings.google_app_data.APP_PASSWORD
         }
     });
 
@@ -85,10 +91,10 @@ async function sendEmail(emailList) {
         html: `Hey y'all,<br>
         <br>
         Thank you for expressing interest in an AACC leadership role! You can find more information about 
-        each of the leadership roles that we'll offer during the school year in <a href=${leadershipDocLink}>this document.</a> <br>
+        each of the leadership roles that we'll offer during the school year in <a href=${settings.links.LEADERSHIP_DOC}>this document.</a> <br>
         <br>
         If you are still interested in being in AACC leadership, please join our informational session <b>this 
-        upcoming Sunday at 5pm CST</b> at <a href=${zoomLink}>this Zoom link</a>, where we will go over the roles and expectations in 
+        upcoming Sunday at 5pm CST</b> at <a href=${settings.links.ZOOM}>this Zoom link</a>, where we will go over the roles and expectations in 
         depth and help onboard those who are interested in being an AACC Ambassador. If you are unable to 
         attend the meeting, please let me know. <br>
         <br>

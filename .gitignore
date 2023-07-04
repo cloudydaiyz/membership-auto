@@ -7,4 +7,8 @@ src/aacc/lambda/settings.json
 src/aacc/lambda/node_modules
 src/aacc/lambda/quickstart.js
 
+src/console/node_modules
+
+src/settings/settings.json
+
 src/terraform/.terraform/

@@ -1,26 +1,22 @@
 // Handles the membership information 
 
 import moment from "moment"
-import { getSettings } from "./settings-manager.js";
-const settings = getSettings();
-
-const membershipLogSheetId = settings.google_ids.MEMBERSHIP_LOG_SHEET_ID;
-const logSheetGid = settings.google_ids.LOG_SHEET_GID;
-const rootFolderId = settings.google_ids.ROOT_FOLDER_ID;
+import { getSettings } from "./settings-manager.mjs";
+let settings;
 
 let events = [];
 let eventTypesToCost = {};
 let members = {};
 let membershipRoles = ["Member", "Ambassador", "Event Planning Committee", "Officer"];
 
-export async function test() {
-    console.log("Hello world!");
-}
-
 // Updates the membership log with membership point & event info
-export async function updateMembershipLog(googleClient) {
+export async function updateMembershipLog(googleClient, importedSettings) {
     const sheets = googleClient.sheets('v4');
     const drive = googleClient.drive('v3');
+
+    if(!settings) {
+        updateSettings(importedSettings);
+    }
 
     await getLogInfo(sheets); // WORKING
     // console.log(members);
@@ -31,22 +27,30 @@ export async function updateMembershipLog(googleClient) {
 }
 
 // Clears current member and event information from the sheet
-export async function clearLogInfo(sheets) {
+export async function clearLogInfo(sheets, importedSettings) {
+    if(!settings) {
+        updateSettings(importedSettings);
+    }
+
     // Clear the Event Log, Membership Log, and the event IDs in the Membership log
     await sheets.spreadsheets.values.batchClear(
         {
-            spreadsheetId: membershipLogSheetId,
+            spreadsheetId: settings.google_ids.MEMBERSHIP_LOG_SHEET_ID,
             ranges: [settings.ranges.EVENT_LOG, settings.ranges.MEMBERSHIP_LOG, settings.ranges.EVENT_IDS]
         }
     );
 }
 
 // Obtains current member and event information from the sheet
-export async function getLogInfo(sheets) {
+export async function getLogInfo(sheets, importedSettings) {
+    if(!settings) {
+        updateSettings(importedSettings);
+    }
+
     // Get each event type and the membership points associated with each type
     let types = await sheets.spreadsheets.values.batchGet(
         {
-          spreadsheetId: membershipLogSheetId,
+          spreadsheetId: settings.google_ids.MEMBERSHIP_LOG_SHEET_ID,
           ranges: [settings.ranges.EVENT_TYPES, settings.ranges.EVENT_COSTS],
           majorDimension: "COLUMNS"
         }
@@ -63,7 +67,7 @@ export async function getLogInfo(sheets) {
     // Obtain current member information from the sheet
     let sheetMembers = await sheets.spreadsheets.values.get(
         {
-          spreadsheetId: membershipLogSheetId,
+          spreadsheetId: settings.google_ids.MEMBERSHIP_LOG_SHEET_ID,
           range: settings.ranges.MEMBERSHIP_INFO,
         }
     )
@@ -95,6 +99,14 @@ export async function getLogInfo(sheets) {
     return members;
 }
 
+function updateSettings(importedSettings) {
+    if(importedSettings) {
+        settings = importedSettings;
+    } else {
+        settings = getSettings();
+    }
+}
+
 // Gets the index of the roleName in the list of membershipRoles, and assumes
 // a Member role if it doesn't exist
 function getRole(roleName) {
@@ -113,7 +125,7 @@ async function getAttendance(drive, sheets) {
     let eventTypeFolders = await drive.files.list(
         {
             pageSize: 150,
-            q: `'${rootFolderId}' in parents and trashed=false`
+            q: `'${settings.google_ids.ROOT_FOLDER_ID}' in parents and trashed=false`
         }
     )
     eventTypeFolders = eventTypeFolders.data.files;
@@ -236,7 +248,7 @@ async function postLogInfo(sheets) {
     // Update the Event Log
     await sheets.spreadsheets.values.update(
         {
-          spreadsheetId: membershipLogSheetId,
+          spreadsheetId: settings.google_ids.MEMBERSHIP_LOG_SHEET_ID,
           range: settings.ranges.EVENT_LOG,
           valueInputOption: "RAW",
           resource: {
@@ -249,7 +261,7 @@ async function postLogInfo(sheets) {
     // Update the membership log for each member
     await sheets.spreadsheets.values.update(
         {
-          spreadsheetId: membershipLogSheetId,
+          spreadsheetId: settings.google_ids.MEMBERSHIP_LOG_SHEET_ID,
           range: settings.ranges.MEMBERSHIP_LOG,
           valueInputOption: "RAW",
           resource: {
@@ -262,7 +274,7 @@ async function postLogInfo(sheets) {
     // Update the membership log with the event IDs
     await sheets.spreadsheets.values.update(
         {
-          spreadsheetId: membershipLogSheetId,
+          spreadsheetId: settings.google_ids.MEMBERSHIP_LOG_SHEET_ID,
           range: settings.ranges.EVENT_IDS,
           valueInputOption: "RAW",
           resource: {
@@ -341,14 +353,14 @@ function getMembershipLogValues() {
 async function applyFormatting(sheets) {
     await sheets.spreadsheets.batchUpdate(
         {
-            "spreadsheetId": membershipLogSheetId,
+            "spreadsheetId": settings.google_ids.MEMBERSHIP_LOG_SHEET_ID,
             "resource": {
                 "requests": [
                     {
                         "autoResizeDimensions": {
                             "dimensions": {
                                 "dimension": "COLUMNS",
-                                "sheetId": logSheetGid,
+                                "sheetId": settings.google_ids.LOG_SHEET_GID,
                                 "startIndex": 9
                             }
                         }

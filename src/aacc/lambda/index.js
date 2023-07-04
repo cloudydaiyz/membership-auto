@@ -1,20 +1,11 @@
 // Entry point for application
 
-import { test, updateMembershipLog } from "./membership.js";
+import { updateMembershipLog } from "./membership.js";
 import { sendLeadershipUpdate } from "./notification.js";
-import { getSettings, getAwsSettings, setAwsSettings } from "./settings-manager.js";
-import open from "open";
+import { getSettings, getAwsSettings, setAwsSettings } from "./settings-manager.mjs";
 import { google } from "googleapis";
-import promptSync from "prompt-sync";
 
 const settings = getSettings();
-const prompt = promptSync();
-
-const scopes = [
-    'https://www.googleapis.com/auth/drive.readonly',
-    'https://www.googleapis.com/auth/spreadsheets'
-];
-
 let tokens;
 
 // Handler for the lambda function
@@ -28,33 +19,16 @@ let tokens;
 // };
 
 async function getAuth() {
+    // Create the OAuth2 client
     const oauth2Client = new google.auth.OAuth2(
         settings.google_app_data.CLIENT_ID,
         settings.google_app_data.CLIENT_SECRET,
         settings.google_app_data.REDIRECT_URL
     );
-
-    // const url = oauth2Client.generateAuthUrl({
-    //     // 'online' (default) or 'offline' (gets refresh_token)
-    //     access_type: 'offline',
-        
-    //     // If you only need one scope you can pass it as a string
-    //     scope: scopes,
-        
-    //     // So that the user consent prompt always shows up (and we can always get a refresh token)
-    //     // Source: https://github.com/googleapis/google-api-nodejs-client/issues/750#issuecomment-368873635
-    //     prompt: 'consent'
-    // });
-
-    // await open(url);
-    // const auth_code = prompt("Please enter the authorization code: ");
-
-    // Get the auth token from the user's authorization code
-    // const {tokens} = await oauth2Client.getToken(auth_code);
-    // console.log(tokens);
     
+    // Retreive previous tokens from S3 bucket
     tokens = await getAwsSettings();
-    console.log(JSON.stringify(tokens));
+    // console.log(JSON.stringify(tokens));
     oauth2Client.setCredentials(tokens);
 
     // Update the credentials accordingly if tokens are changed
@@ -67,18 +41,19 @@ async function getAuth() {
     google.options({auth: oauth2Client});
 }
 
+// Update the AACC membership log
 async function updateLogs() {
     await getAuth();
     await updateMembershipLog(google);
     await setAwsSettings(tokens);
 }
 
+// Send the AACC leadership update
 async function notify() {
     await getAuth();
     await sendLeadershipUpdate(google);
     await setAwsSettings(tokens);
 }
 
-// getAuth();
-updateLogs();
-// notify();
+// updateLogs();
+notify();
