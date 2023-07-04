@@ -1,5 +1,7 @@
 notes.txt
 credentials.json
+ind.txt
+sm.txt
 
 src/aacc/lambda/settings.json
 src/aacc/lambda/node_modules
