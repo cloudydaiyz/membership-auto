@@ -1,7 +1,9 @@
 # Membership Automation Tool
+![Static Badge](https://img.shields.io/badge/version-0.2-blue)
+
 Handles the automation of membership information for AACC and ABCS. Based off of my previous [AACC automation project](https://github.com/cloudydaiyz/aacc-membership-log).
 
-### Currently on Version 0.2:
+### Version 0.2:
 - Can manually update the AACC membership log through the console
 - Can manually send the AACC leadership update through the console
 - Update settings.json in S3 bucket through the console
