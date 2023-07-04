@@ -10,6 +10,6 @@ src/aacc/lambda/quickstart.js
 src/console/node_modules
 
 src/settings/settings.json
-src/settings/node_modules/
+src/settings/node_modules
 
 src/terraform/.terraform/
