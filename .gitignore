@@ -1,4 +1,5 @@
 notes.txt
+credentials.json
 
 src/aacc/lambda/settings.json
 src/aacc/lambda/node_modules
