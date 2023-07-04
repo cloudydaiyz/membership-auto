@@ -18,3 +18,5 @@ Handles the automation of membership information for AACC and ABCS. Based off of
 - Schedule lambda the 1st of every month to refresh membership logs
 - Schedule lambda every 1st Monday of the month to clear leadership info form and notify respondees
 - Deploy AWS CloudWatch and AWS Lambda using Terraform
+- Sort event log based on date
+- Add send leadership meeting follow up email to the console
