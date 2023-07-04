@@ -4,3 +4,5 @@ credentials.json
 src/aacc/lambda/settings.json
 src/aacc/lambda/node_modules
 src/aacc/lambda/quickstart.js
+
+src/terraform/.terraform/
