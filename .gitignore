@@ -5,9 +5,10 @@ sm.txt
 
 src/aacc/lambda/settings.json
 src/aacc/lambda/node_modules
-src/aacc/lambda/quickstart.js
+src/aacc/aacc-lambda.zip
 
 src/console/node_modules
+src/console/quickstart.js
 
 src/settings/settings.json
 src/settings/node_modules/

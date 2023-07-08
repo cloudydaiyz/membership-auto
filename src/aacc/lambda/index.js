@@ -5,18 +5,44 @@ import { sendLeadershipUpdate } from "./notification.js";
 import { getSettings, getAwsSettings, setAwsSettings } from "./settings-manager.mjs";
 import { google } from "googleapis";
 
-const settings = getSettings();
+const settings = getSettings("./lambda/settings.json");
 let tokens;
 
 // Handler for the lambda function
-// exports.handler = async(event) => {
-//     // TODO implement
-//     const response = {
-//         statusCode: 200,
-//         body: JSON.stringify('Hello from Lambda!'),
-//     };
-//     return response;
-// };
+export const handler = async(event) => {
+    // Check what we need to do
+    let response;
+    let update = event["update"];
+    console.log(event);
+    if(update) {
+        if(update == "membership_logs"){
+            // Update the membership logs
+            await updateLogs();
+        } else if(update == "leadership_update"){
+            // Send the leadership update notification
+            await notify();
+        } else {
+            response = {
+                statusCode: 400,
+                body: JSON.stringify("Invalid update input")
+            };
+        }
+    } else {
+        response = {
+            statusCode: 400,
+            body: JSON.stringify("No update key specified.")
+        };
+    }
+
+    if(!response) {
+        response = {
+            statusCode: 200,
+            body: JSON.stringify("Update complete!")
+        };
+    }
+    console.log(response);
+    return response;
+};
 
 async function getAuth() {
     // Create the OAuth2 client
@@ -55,5 +81,6 @@ async function notify() {
     await setAwsSettings(tokens);
 }
 
-// updateLogs();
-notify();
+handler({
+    "update": "membership_logs"
+});

@@ -16,7 +16,8 @@ export async function sendLeadershipUpdate(googleClient, importedSettings) {
     }
 
     const emailList = await obtainEmailList(sheets);
-    sendEmail(emailList);
+    await sendEmail(emailList);
+    console.log("send leadership update complete");
 }
 
 function updateSettings(importedSettings) {
@@ -53,9 +54,9 @@ async function obtainEmailList(sheets) {
         if(timestampMoment.isAfter(oneMonthAgo)) {
             // Don't add them to the email list if they're already an officer
             if(memberInfo[3] in currentMembers && currentMembers[memberInfo[3]].role > 0) {
-                console.log(`${memberInfo[1]} with email ${memberInfo[4]} answered this past month. They're already an officer!`);
+                // console.log(`${memberInfo[1]} with email ${memberInfo[4]} answered this past month. They're already an officer!`);
             } else {
-                console.log(`${memberInfo[1]} with email ${memberInfo[4]} answered this past month`);
+                // console.log(`${memberInfo[1]} with email ${memberInfo[4]} answered this past month`);
                 emailList.push(memberInfo[4]);
             }
         }

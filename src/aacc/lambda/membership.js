@@ -24,6 +24,8 @@ export async function updateMembershipLog(googleClient, importedSettings) {
     await clearLogInfo(sheets); // WORKING
     await getAttendance(drive, sheets); // WORKING
     await postLogInfo(sheets); // WORKING
+
+    console.log("update membership log complete");
 }
 
 // Clears current member and event information from the sheet
@@ -130,8 +132,7 @@ async function getAttendance(drive, sheets) {
     )
     eventTypeFolders = eventTypeFolders.data.files;
 
-    // Go through each of the folders
-    let eventCount = 0;
+    // Go through each of the folders and create event objects from each spreadsheet
     for(let i = 0; i < eventTypeFolders.length; i++) {
         const currentEventType = eventTypeFolders[i];
 
@@ -151,7 +152,7 @@ async function getAttendance(drive, sheets) {
                 // Create the event object and put it into the event list
                 const currentEvent = eventsForCurrentType[j];
                 const currentEventNameInfo = extractNameInfo(currentEvent["name"]); // event name and event date
-                console.log(currentEvent);
+                // console.log(currentEvent);
                 let eventObject = {
                     eventName: currentEventNameInfo[1],
                     eventType: currentEventType["name"],
@@ -159,12 +160,20 @@ async function getAttendance(drive, sheets) {
                     spreadsheetId: currentEvent["id"]
                 };
                 events.push(eventObject);
-
-                // Update attendance information from the event
-                await getAttendanceInSheet(sheets, eventCount);
-                eventCount++;
             }
         }
+    }
+
+    // Sort the list of events
+    events.sort((a, b) => {
+        const momentA = moment(a.eventDate, "M/D/YYYY");
+        const momentB = moment(b.eventDate, "M/D/YYYY");
+        return momentA.diff(momentB);
+    });
+
+    // Update attendance information from each event
+    for(let i = 0; i < events.length; i++) {
+        await getAttendanceInSheet(sheets, i);
     }
 }
 

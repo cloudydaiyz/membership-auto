@@ -41,7 +41,7 @@ export async function getAwsSettings() {
         Key: settings.aws_data.KEY
     };
 
-    console.log("get object");
+    // console.log("get object");
     let content;
     await s3.getObject(params, (err, data) => {
         if (err) {
@@ -50,7 +50,7 @@ export async function getAwsSettings() {
             content = JSON.parse(data.Body.toString());
         }
     }).promise();
-    console.log("get object done");
+    // console.log("get object done");
     return content;
 }
 
@@ -63,7 +63,7 @@ export async function setAwsSettings(credentials) {
         return;
     } else {
         console.log("SAVING DATA:");
-        console.log(credentials);
+        // console.log(credentials);
     }
 
     const params2 = {
