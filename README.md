@@ -1,5 +1,5 @@
-# Membership Automation Tool
 ![Static Badge](https://img.shields.io/badge/version-0.2-blue)
+# Membership Automation Tool
 
 Handles the automation of membership information for AACC and ABCS. Based off of my previous [AACC automation project](https://github.com/cloudydaiyz/aacc-membership-log).
 
