@@ -13,4 +13,5 @@ src/console/quickstart.js
 src/settings/settings.json
 src/settings/node_modules/
 
-src/terraform/.terraform/
+.DS_Store
+src/.DS_Store
