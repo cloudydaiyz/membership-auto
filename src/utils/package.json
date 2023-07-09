@@ -1,0 +1,14 @@
+{
+  "name": "@cloudydaiyz/membership-auto-utils",
+  "version": "1.0.0",
+  "description": "Utility package for the membership-auto project",
+  "main": "settings-manager.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1410.0"
+  }
+}

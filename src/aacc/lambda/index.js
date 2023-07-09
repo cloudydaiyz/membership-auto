@@ -80,7 +80,3 @@ async function notify() {
     await sendLeadershipUpdate(google);
     await setAwsSettings(tokens);
 }
-
-handler({
-    "update": "membership_logs"
-});
