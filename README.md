@@ -1,7 +1,7 @@
 ![Static Badge](https://img.shields.io/badge/version-1.0-blue)
 # Membership Automation Tool
 
-Handles the automation of membership information for AACC and ABCS. Based off of my previous [AACC automation project](https://github.com/cloudydaiyz/aacc-membership-log).
+Handles the automation of membership information for AACC and ABCS using Node.js. Based off of my previous [AACC automation project](https://github.com/cloudydaiyz/aacc-membership-log).
 
 ## Next Goals
 - Create a public utility npm package to minimize code
