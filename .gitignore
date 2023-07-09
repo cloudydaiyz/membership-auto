@@ -10,8 +10,7 @@ src/aacc/aacc-lambda.zip
 src/console/node_modules
 src/console/quickstart.js
 
-src/settings/settings.json
-src/settings/node_modules/
+src/utils/node_modules/
 
 .DS_Store
 src/.DS_Store
