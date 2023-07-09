@@ -4,8 +4,8 @@
 Handles the automation of membership information for AACC and ABCS. Based off of my previous [AACC automation project](https://github.com/cloudydaiyz/aacc-membership-log).
 
 ## Next Goals
-- Do the same for ABCS
-- Create npm packages for each src file (aacc/lambda, abcs/lambda, settings)
+- Create a public utility npm package to minimize code
+- Create the same functionality for ABCS membership logs
 - Add TypeScript for better typing
 
 ## Update Logs
