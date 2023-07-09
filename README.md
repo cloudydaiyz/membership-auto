@@ -3,7 +3,12 @@
 
 Handles the automation of membership information for AACC and ABCS. Based off of my previous [AACC automation project](https://github.com/cloudydaiyz/aacc-membership-log).
 
-## Recent Updates
+## Next Goals
+- Do the same for ABCS
+- Create npm packages for each src file (aacc/lambda, abcs/lambda, settings)
+- Add TypeScript for better typing
+
+## Update Logs
 ### v1.0:
 - Schedule lambda the 1st of every month to refresh membership logs for AACC
 - Schedule lambda every 1st Monday of the month to clear leadership info form and notify respondees for AACC
@@ -20,6 +25,3 @@ Handles the automation of membership information for AACC and ABCS. Based off of
 - Added implementation for updating the AACC membership log
 - Added implementation for sending the AACC leadership update through the console
 - Added implementation to retreiving/sending settings data from/to S3 bucket
-
-## Next Goals
-- Do the same for ABCS
