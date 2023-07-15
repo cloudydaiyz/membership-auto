@@ -13,11 +13,9 @@
     "url": "https://github.com/cloudydaiyz/aacc-membership/issues"
   },
   "homepage": "https://github.com/cloudydaiyz/aacc-membership#readme",
+  "type": "module",
   "dependencies": {
-    "aws-sdk": "^2.1410.0",
-    "googleapis": "^105.0.0",
-    "moment": "^2.29.4",
-    "nodemailer": "^6.9.3"
-  },
-  "type": "module"
+    "@cloudydaiyz/membership-auto-utils": "^1.0.5",
+    "googleapis": "^122.0.0"
+  }
 }

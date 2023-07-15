@@ -1,14 +1,23 @@
 {
   "name": "@cloudydaiyz/membership-auto-utils",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "Utility package for the membership-auto project",
   "main": "settings-manager.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Kylan Duncan",
   "license": "ISC",
+  "homepage": "https://github.com/cloudydaiyz/membership-auto/tree/main/src/utils",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudydaiyz/membership-auto.git"
+  },
   "dependencies": {
-    "aws-sdk": "^2.1410.0"
-  }
+    "aws-sdk": "^2.1410.0",
+    "googleapis": "^105.0.0",
+    "moment": "^2.29.4",
+    "nodemailer": "^6.9.3"
+  },
+  "type": "module"
 }

@@ -5,7 +5,7 @@ import readline from "readline-sync";
 import { google } from "googleapis";
 import { updateMembershipLog } from "../aacc/lambda/membership.js";
 import { sendLeadershipUpdate } from "../aacc/lambda/notification.js";
-import { getSettings, getAwsSettings, setAwsSettings } from "../settings/settings-manager.mjs";
+import { getSettings, getAwsSettings, setAwsSettings } from "../utils/settings-manager.mjs";
 import open from "open";
 
 const scopes = [
@@ -14,7 +14,7 @@ const scopes = [
 ];
 
 let credentialsUpdated = false;
-let settings = getSettings("../settings/settings.json");
+let settings = getSettings("../aacc/lambda/settings.json");
 let tokens;
 
 async function start() {
@@ -97,7 +97,7 @@ async function updateCredentials() {
 
     // Get the auth token from the user's authorization code
     tokens = await oauth2Client.getToken(auth_code);
-    console.log(tokens.tokens);
+    // console.log(tokens.tokens);
 
     oauth2Client.setCredentials(tokens.tokens);
     google.options({auth: oauth2Client});

@@ -1,35 +1,25 @@
 // Handles the email sending for leadership roles
 
+// Exported function(s):
+// sendLeadershipUpdate(googleClient, mailOptions, settings)
+
 import moment from "moment"
 import nodemailer from "nodemailer";
 import { getLogInfo } from "./membership.js"
-import { getSettings } from "./settings-manager.mjs";
 
-let settings;
-
-export async function sendLeadershipUpdate(googleClient, importedSettings) {
-    // console.log(moment());
+// Sends a leadership update email to those who signed up for a leadership 
+// position within the past month
+export async function sendLeadershipUpdate(googleClient, mailOptions, settings) {
     const sheets = googleClient.sheets('v4');
 
-    if(!settings) {
-        updateSettings(importedSettings);
-    }
-
-    const emailList = await obtainEmailList(sheets);
-    await sendEmail(emailList);
+    const emailList = await obtainEmailList(sheets, settings);
+    await sendEmail(emailList, mailOptions, settings);
     console.log("send leadership update complete");
 }
 
-function updateSettings(importedSettings) {
-    if(importedSettings) {
-        settings = importedSettings;
-    } else {
-        settings = getSettings();
-    }
-}
-
+// HELPER FUNCTION
 // Returns a list of people to email for leadership roles
-async function obtainEmailList(sheets) {
+async function obtainEmailList(sheets, settings) {
     // Obtain sign up information from the sheet
     let sheetMembers = await sheets.spreadsheets.values.get(
         {
@@ -65,7 +55,9 @@ async function obtainEmailList(sheets) {
     return emailList;
 }
 
-async function sendEmail(emailList) {
+// HELPER FUNCTION
+// Sends the email update to the email list
+async function sendEmail(emailList, mailOptions, settings) {
     // Create the string of emails to send to from the email list
     let emailString = "";
     for(let i = 0; i < emailList.length; i++) {
@@ -84,26 +76,27 @@ async function sendEmail(emailList) {
         }
     });
 
-    // Update the mailing options
-    const mailOptions = {
-        from: "kduncan@utexas.edu",
-        to: emailString,
-        subject: "AACC Leadership Update",
-        html: `Hey y'all,<br>
-        <br>
-        Thank you for expressing interest in an AACC leadership role! You can find more information about 
-        each of the leadership roles that we'll offer during the school year in <a href=${settings.links.LEADERSHIP_DOC}>this document.</a> <br>
-        <br>
-        If you are still interested in being in AACC leadership, please join our informational session <b>this 
-        upcoming Sunday at 5pm CST</b> at <a href=${settings.links.ZOOM}>this Zoom link</a>, where we will go over the roles and expectations in 
-        depth and help onboard those who are interested in being an AACC Ambassador. If you are unable to 
-        attend the meeting, please let me know. <br>
-        <br>
-        I'm looking forward to working with you soon!<br>
-        <br>
-        Best,<br>
-        Kylan`
-    };
+    // Example of mailOptions
+    // const mailOptions = {
+    //     from: "kduncan@utexas.edu",
+    //     subject: "AACC Leadership Update",
+    //     html: `Hey y'all,<br>
+    //     <br>
+    //     Thank you for expressing interest in an AACC leadership role! You can find more information about 
+    //     each of the leadership roles that we'll offer during the school year in <a href=${settings.links.LEADERSHIP_DOC}>this document.</a> <br>
+    //     <br>
+    //     If you are still interested in being in AACC leadership, please join our informational session <b>this 
+    //     upcoming Sunday at 5pm CST</b> at <a href=${settings.links.ZOOM}>this Zoom link</a>, where we will go over the roles and expectations in 
+    //     depth and help onboard those who are interested in being an AACC Ambassador. If you are unable to 
+    //     attend the meeting, please let me know. <br>
+    //     <br>
+    //     I'm looking forward to working with you soon!<br>
+    //     <br>
+    //     Best,<br>
+    //     Kylan`
+    // };
+
+    mailOptions.to = emailString;
 
     // Send the mail to everyone in the list
     transport.sendMail(mailOptions);

@@ -1,16 +1,18 @@
 notes.txt
 credentials.json
-ind.txt
-sm.txt
 
-src/aacc/lambda/settings.json
-src/aacc/lambda/node_modules
+src/aacc/settings.json
+src/aacc/node_modules
 src/aacc/aacc-lambda.zip
 
 src/console/node_modules
 src/console/quickstart.js
 
 src/utils/node_modules/
+
+src/testing
+src/nodejs
+src/nodejs-layer.zip
 
 .DS_Store
 src/.DS_Store

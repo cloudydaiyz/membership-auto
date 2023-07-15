@@ -1,8 +1,11 @@
 // Handles the membership information 
 
+// Exported function(s):
+// updateMembershipLog(googleClient, settings)
+// clearLogInfo(sheets, settings)
+// members = getLogInfo(sheets, settings)
+
 import moment from "moment"
-import { getSettings } from "./settings-manager.mjs";
-let settings;
 
 let events = [];
 let eventTypesToCost = {};
@@ -10,30 +13,20 @@ let members = {};
 let membershipRoles = ["Member", "Ambassador", "Event Planning Committee", "Officer"];
 
 // Updates the membership log with membership point & event info
-export async function updateMembershipLog(googleClient, importedSettings) {
+export async function updateMembershipLog(googleClient, settings) {
     const sheets = googleClient.sheets('v4');
     const drive = googleClient.drive('v3');
 
-    if(!settings) {
-        updateSettings(importedSettings);
-    }
-
-    await getLogInfo(sheets); // WORKING
-    // console.log(members);
-    // console.log(eventTypesToCost);
-    await clearLogInfo(sheets); // WORKING
-    await getAttendance(drive, sheets); // WORKING
-    await postLogInfo(sheets); // WORKING
+    await getLogInfo(sheets, settings); 
+    await clearLogInfo(sheets, settings); 
+    await getAttendance(drive, sheets, settings); 
+    await postLogInfo(sheets, settings); 
 
     console.log("update membership log complete");
 }
 
 // Clears current member and event information from the sheet
-export async function clearLogInfo(sheets, importedSettings) {
-    if(!settings) {
-        updateSettings(importedSettings);
-    }
-
+export async function clearLogInfo(sheets, settings) {
     // Clear the Event Log, Membership Log, and the event IDs in the Membership log
     await sheets.spreadsheets.values.batchClear(
         {
@@ -44,11 +37,7 @@ export async function clearLogInfo(sheets, importedSettings) {
 }
 
 // Obtains current member and event information from the sheet
-export async function getLogInfo(sheets, importedSettings) {
-    if(!settings) {
-        updateSettings(importedSettings);
-    }
-
+export async function getLogInfo(sheets, settings) {
     // Get each event type and the membership points associated with each type
     let types = await sheets.spreadsheets.values.batchGet(
         {
@@ -101,14 +90,6 @@ export async function getLogInfo(sheets, importedSettings) {
     return members;
 }
 
-function updateSettings(importedSettings) {
-    if(importedSettings) {
-        settings = importedSettings;
-    } else {
-        settings = getSettings();
-    }
-}
-
 // Gets the index of the roleName in the list of membershipRoles, and assumes
 // a Member role if it doesn't exist
 function getRole(roleName) {
@@ -120,9 +101,10 @@ function getRole(roleName) {
     return 0;
 }
 
+// HELPER METHOD
 // Go through each spreadsheet in the drive from the root folder and get attendance
 // of each member
-async function getAttendance(drive, sheets) {
+async function getAttendance(drive, sheets, settings) {
     // Get the folders of each event type
     let eventTypeFolders = await drive.files.list(
         {
@@ -173,10 +155,11 @@ async function getAttendance(drive, sheets) {
 
     // Update attendance information from each event
     for(let i = 0; i < events.length; i++) {
-        await getAttendanceInSheet(sheets, i);
+        await getAttendanceInSheet(sheets, i, settings);
     }
 }
 
+// HELPER METHOD
 // Each spreadsheet in the drive will have this format:
 // [DATE] [EVENT NAME]
 // where the name of the event can have spaces and alphanumeric numbers.
@@ -187,8 +170,9 @@ function extractNameInfo(eventName) {
     return [eventName.substring(0, splitPoint), eventName.substring(splitPoint + 1)];
 }
 
+// HELPER METHOD
 // Get attendance of each member in a particular spreadsheet
-async function getAttendanceInSheet(sheets, eventId) {
+async function getAttendanceInSheet(sheets, eventId, settings) {
     // Get the spreadsheetId from the event (using the eventId)
     const event = events[eventId];
     let attendees = await sheets.spreadsheets.values.get(
@@ -245,9 +229,10 @@ async function getAttendanceInSheet(sheets, eventId) {
     }
 }
 
+// HELPER METHOD
 // Update membership log based on the info currently retrieved
 // Currently not using batchUpdate to avoid a 411 error (for some reason x_x)
-async function postLogInfo(sheets) {
+async function postLogInfo(sheets, settings) {
     // Get the event IDs in a format that can be posted to the spreadsheet
     let eventIds = [];
     for(let i = 0; i < events.length; i++) {
@@ -294,9 +279,10 @@ async function postLogInfo(sheets) {
     );
 
     // Finally, apply formatting to the sheet
-    await applyFormatting(sheets);
+    await applyFormatting(sheets, settings);
 }
 
+// HELPER FUNCTION
 // Converts the current event information from the event list to values that
 // can be posted to a spreadsheet
 function getEventLogValues() {
@@ -318,6 +304,7 @@ function getEventLogValues() {
     return values;
 }
 
+// HELPER FUNCTION
 // Converts the current member information from the member dictionary to values
 // that can be posted to a spreadsheet
 function getMembershipLogValues() {
@@ -357,9 +344,10 @@ function getMembershipLogValues() {
     return values;
 }
 
+// HELPER FUNCTION
 // Apply formatting to the membership log
 // Reference: https://stackoverflow.com/questions/49970988/how-to-autofit-column-width-with-google-sheets-api
-async function applyFormatting(sheets) {
+async function applyFormatting(sheets, settings) {
     await sheets.spreadsheets.batchUpdate(
         {
             "spreadsheetId": settings.google_ids.MEMBERSHIP_LOG_SHEET_ID,
